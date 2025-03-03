@@ -1,0 +1,45 @@
+# Cargar el dataset
+data("AirPassengers")
+
+# Inspeccionar la estructura del dataset
+print(class(AirPassengers))   # Verifica que es una serie temporal (ts)
+print(summary(AirPassengers)) # Resumen estadístico
+print(start(AirPassengers))   # Inicio de la serie
+print(end(AirPassengers))     # Fin de la serie
+print(frequency(AirPassengers)) # Frecuencia: 12 (mensual)
+
+# Exploración inicial
+# Graficar la serie temporal
+plot(AirPassengers, main="Serie Temporal de AirPassengers", ylab="Número de pasajeros", xlab="Año")
+
+# Calcular estadísticas descriptivas básicas
+mean(AirPassengers)
+sd(AirPassengers)
+
+# Análisis de tendencia y estacionalidad
+# Descomponer la serie temporal
+decomposed <- decompose(AirPassengers)
+
+# Visualizar cada componente por separado
+plot(decomposed)
+
+# Análisis de estacionariedad
+# Gráficos de autocorrelación
+acf(AirPassengers, main="ACF de AirPassengers")
+pacf(AirPassengers, main="PACF de AirPassengers")
+
+# Prueba de Dickey-Fuller aumentada
+library(tseries)
+adf.test(AirPassengers)
+
+# Si la serie no es estacionaria, realizar una diferenciación
+diff_AirPassengers <- diff(AirPassengers)
+plot(diff_AirPassengers, main="Serie Temporal Diferenciada de AirPassengers", ylab="Diferencia en el número de pasajeros", xlab="Año")
+
+# Detección de valores atípicos
+# Visualizar posibles valores atípicos
+boxplot(AirPassengers, main="Boxplot de AirPassengers", ylab="Número de pasajeros")
+
+# Interpretación de resultados
+# Resume las tendencias, estacionalidades y ciclos observados
+# Discute cómo estos patrones podrían influir en la interpretación de los datos
