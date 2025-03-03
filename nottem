@@ -1,0 +1,44 @@
+# 1. Carga del dataset
+data("nottem")
+
+# Inspeccionar la estructura
+print(class(nottem))
+print(summary(nottem))
+
+# Graficar la serie temporal
+plot(nottem, main = "Temperaturas Mensuales en Nottingham (1920-1939)",
+     xlab = "Año", ylab = "Temperatura", col = "blue")
+
+# 2. Exploración y preparación de datos
+# Descomponer la serie temporal
+decomposed_nottem <- decompose(nottem)
+
+# Visualizar cada componente por separado
+plot(decomposed_nottem)
+
+# 3. Análisis de estacionariedad
+# Gráficos ACF/PACF
+acf(nottem, main="ACF de nottem")
+pacf(nottem, main="PACF de nottem")
+
+# Prueba de Dickey-Fuller aumentada
+library(tseries)
+adf.test(nottem)
+
+# 4. Transformación de la serie (si es necesario)
+# Si la serie no es estacionaria, realizar una diferenciación
+diff_nottem <- diff(nottem)
+plot(diff_nottem, main="Serie Temporal Diferenciada de nottem", ylab="Diferencia en la temperatura", xlab="Año")
+
+# Verificar nuevamente la estacionariedad
+acf(diff_nottem, main="ACF de nottem Diferenciada")
+pacf(diff_nottem, main="PACF de nottem Diferenciada")
+adf.test(diff_nottem)
+
+# 5. Detección de valores atípicos
+# Visualizar posibles valores atípicos
+boxplot(nottem, main="Boxplot de nottem", ylab="Temperatura")
+
+# 6. Interpretación de resultados
+# Resume las tendencias, estacionalidades y ciclos observados
+# Discute cómo estos patrones podrían influir en la interpretación de los datos
