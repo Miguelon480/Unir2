@@ -1,0 +1,80 @@
+import pandas as pd
+import folium
+from folium.plugins import HeatMap, MarkerCluster
+
+# Cargar el dataset
+df = pd.read_csv('fires_map.csv')
+
+# Crear un mapa base centrado en una ubicación específica
+m = folium.Map(location=[df['latitude'].mean(), df['longitude'].mean()], zoom_start=6)
+
+# Mapa 1: Mapa de calor
+heat_data = [[row['latitude'], row['longitude']] for index, row in df.iterrows()]
+HeatMap(heat_data).add_to(m)
+m.save('heatmap.html')
+
+# Mapa 2: Mapa de marcadores de incendios con popups
+m2 = folium.Map(location=[df['latitude'].mean(), df['longitude'].mean()], zoom_start=6)
+for index, row in df.iterrows():
+    if row['brightness'] < 350:
+        color = 'yellow'
+    elif row['brightness'] < 400:
+        color = 'orange'
+    else:
+        color = 'red'
+    folium.Marker(
+        location=[row['latitude'], row['longitude']],
+        popup=f"Brightness: {row['brightness']}",
+        icon=folium.Icon(color=color, icon='fire')
+    ).add_to(m2)
+m2.save('marker_map.html')
+
+# Mapa 3: Agrupación de incendios con MarkerCluster
+m3 = folium.Map(location=[df['latitude'].mean(), df['longitude'].mean()], zoom_start=6)
+marker_cluster = MarkerCluster().add_to(m3)
+for index, row in df.iterrows():
+    folium.Marker(
+        location=[row['latitude'], row['longitude']],
+        popup=f"Brightness: {row['brightness']}"
+    ).add_to(marker_cluster)
+m3.save('cluster_map.html')
+
+# Mapa 4: Diferenciar incendios por satélite (Aqua vs. Terra)
+m4 = folium.Map(location=[df['latitude'].mean(), df['longitude'].mean()], zoom_start=6)
+fg_aqua = folium.FeatureGroup(name='Aqua').add_to(m4)
+fg_terra = folium.FeatureGroup(name='Terra').add_to(m4)
+for index, row in df.iterrows():
+    if row['satellite'] == 'Aqua':
+        folium.Marker(
+            location=[row['latitude'], row['longitude']],
+            popup=f"Brightness: {row['brightness']}",
+            icon=folium.Icon(color='blue')
+        ).add_to(fg_aqua)
+    else:
+        folium.Marker(
+            location=[row['latitude'], row['longitude']],
+            popup=f"Brightness: {row['brightness']}",
+            icon=folium.Icon(color='green')
+        ).add_to(fg_terra)
+folium.LayerControl().add_to(m4)
+m4.save('satellite_map.html')
+
+# Mapa 5: Diferenciar incendios por color según brillo
+m5 = folium.Map(location=[df['latitude'].mean(), df['longitude'].mean()], zoom_start=6)
+fg_yellow = folium.FeatureGroup(name='Yellow').add_to(m5)
+fg_orange = folium.FeatureGroup(name='Orange').add_to(m5)
+fg_red = folium.FeatureGroup(name='Red').add_to(m5)
+for index, row in df.iterrows():
+    if row['brightness'] < 350:
+        fg = fg_yellow
+    elif row['brightness'] < 400:
+        fg = fg_orange
+    else:
+        fg = fg_red
+    folium.Marker(
+        location=[row['latitude'], row['longitude']],
+        popup=f"Brightness: {row['brightness']}",
+        icon=folium.Icon(color='lightgray')
+    ).add_to(fg)
+folium.LayerControl().add_to(m5)
+m5.save('brightness_map.html')
